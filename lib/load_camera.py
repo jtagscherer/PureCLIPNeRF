@@ -98,10 +98,10 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
                     print(f'Reading {image_path}')
-                    print(cv2.imread(image_path))
-                    print(cv2.imread(image_path).shape)
+                    print(cv2.imread(image_path, cv2.IMREAD_UNCHANGED))
+                    print(cv2.imread(image_path, cv2.IMREAD_UNCHANGED).shape)
                     raise Exception()
-                    image_list.append(cv2.imread(image_path))
+                    image_list.append(cv2.imread(image_path, cv2.IMREAD_UNCHANGED))
 
                 preloaded_poses = torch.from_numpy(np.asarray(pose_list))
                 preloaded_images = torch.from_numpy(np.asarray(image_list))
