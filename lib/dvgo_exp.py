@@ -250,6 +250,7 @@ class DirectVoxGO(torch.nn.Module):
         ind_norm = ((xyz - self.xyz_min) / (self.xyz_max - self.xyz_min)).flip((-1,)) * 2 - 1
         ret_lst = [
             # TODO: use `rearrange' to make it readable
+            raise Exception(f'{grid.dtype}, {ind_norm.dtype}')
             F.grid_sample(grid, ind_norm, mode=mode, align_corners=align_corners).reshape(grid.shape[1],-1).T.reshape(*shape,grid.shape[1])
             for grid in grids
         ]
