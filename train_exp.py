@@ -379,7 +379,8 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
 
         # Add MSE-based loss
         # rgb_tr, rgb
-        raise Exception(f'GT: {rgb_tr.shape} min: {rgb_tr.min()} max: {rgb_tr.max()}, RGB: {rgb.shape} min: {rgb.min()} max: {rgb.max()}')
+        raise Exception(f'GT: {rgb_tr.shape} min: {rgb_tr.min()} max: {(rgb_tr / 255.0).max()}, RGB: {rgb.shape} min: {rgb.min()} max: {rgb.max()}')
+        
 
         """
         Get augmentations from DiffAugment ('color,translation,resize,cutout')
