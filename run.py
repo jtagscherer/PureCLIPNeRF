@@ -78,7 +78,7 @@ def seed_everything():
 def load_everything(args, cfg):
     '''Load images / poses / camera settings / data split.
     '''
-    data_dict = load_data(cfg.data)
+    data_dict = load_data(cfg.data, dataset=cfg.dataset)
 
     # remove useless field
     kept_keys = {
