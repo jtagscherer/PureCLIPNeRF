@@ -39,6 +39,6 @@ for scene in scenes.values():
     current_query = current_query[:1].upper() + current_query[1:]
 
     # Render stylized scene
-    command = f'python run.py --config configs/low/exp_vit16.py --prompt "{current_query}" --dataset datasets/{scene["dataset"]}/ --i_print 5000 --i_weights 15000'
+    command = f'python run.py --config configs/low/exp_vit16.py --prompt "{current_query}" --dataset datasets/{scene["dataset"]}/ --i_print 500 --i_weights 1000 --iters 1000'
     os.system(command)
     os.system(f'mv logs/low_exp_vit16 logs/{scene["dataset"]}_{query["name"]}')
