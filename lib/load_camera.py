@@ -103,8 +103,8 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 print(f'Image shape. {preloaded_images.shape}')
 
         idx = np.random.choice(np.arange(len(preloaded_poses)), th.shape[0], replace=True)
-        poses = torch.stack(preloaded_poses[idx], 0)
-        imgs = torch.stack(preloaded_images[idx], 0)
+        poses = torch.stack(torch.from_numpy(preloaded_poses[idx]), 0)
+        imgs = torch.stack(torch.from_numpy(preloaded_images[idx]), 0)
     else:
         poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
         imgs = np.zeros((num_train + num_val + num_test, resolution, resolution, 4))
