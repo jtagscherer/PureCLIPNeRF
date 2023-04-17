@@ -429,7 +429,7 @@ class MaskCache(nn.Module):
         '''
         shape = xyz.shape[:-1]
         xyz = xyz.reshape(-1, 3)
-        mask = render_utils_cuda.maskcache_lookup(self.mask, xyz, self.xyz2ijk_scale, self.xyz2ijk_shift)
+        mask = render_utils_cuda.maskcache_lookup(self.mask.to(torch.float32), xyz.to(torch.float32), self.xyz2ijk_scale.to(torch.float32), self.xyz2ijk_shift.to(torch.float32))
         mask = mask.reshape(shape)
         return mask
 
