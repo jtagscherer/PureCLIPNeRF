@@ -81,7 +81,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
 
     # CUSTOM: Load poses and images from a dataset
     if dataset is not None:
-        if preloaded_poses is None:
+        if len(preloaded_poses) == 0:
             with open(os.path.join(os.getcwd(), dataset, 'transforms_train.json'), 'r') as f:
                 frames = json.load(f)['frames']
                 print(f'Loading {len(frames)} poses from the dataset...')
