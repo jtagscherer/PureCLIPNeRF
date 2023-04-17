@@ -97,14 +97,16 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 for frame in tqdm.tqdm(frames):
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
-                    original_image = cv2.imread(image_path)
+                    original_image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+                    transparency_mask = original_image[:, :, 3] == 0
+                    original_image[transparency_mask] = [255, 255, 255, 255]
+                    original_image = cv2.cvtColor(original_image, cv2.COLOR_BGRA2BGR)
                     image_list.append(cv2.resize(original_image, (224, 224), interpolation=cv2.INTER_AREA))
 
                 preloaded_poses = torch.from_numpy(np.asarray(pose_list))
                 preloaded_images = torch.from_numpy(np.asarray(image_list))
 
         idx = np.random.choice(np.arange(len(preloaded_poses)), th.shape[0], replace=True)
-        print(f'Chosen indices: {idx}')
         poses = torch.stack([preloaded_poses[idx]], 0).squeeze()
         imgs = torch.stack([preloaded_images[idx]], 0).squeeze()
         # render_poses = torch.stack([preloaded_poses], 0).squeeze()
