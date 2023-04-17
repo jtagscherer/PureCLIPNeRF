@@ -202,6 +202,8 @@ render_viewpoints_kwargs = {
     },
 }
 
+
+
 # render testset
 if args.render_test:
     testsavedir = os.path.join(cfg.basedir, cfg.expname, f'render_test_{ckpt_name}')
