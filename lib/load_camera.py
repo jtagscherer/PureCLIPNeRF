@@ -80,16 +80,24 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     ####################################################################################################################################################
 
     # CUSTOM: Load poses and images from a dataset
+    global preloaded_images, preloaded_poses
+    
     if dataset is not None:
         if len(preloaded_poses) == 0:
             with open(os.path.join(os.getcwd(), dataset, 'transforms_train.json'), 'r') as f:
                 frames = json.load(f)['frames']
                 print(f'Loading {len(frames)} poses from the dataset...')
 
+                pose_list = []
+                image_list = []
+
                 for frame in tqdm.tqdm(enumerate(frames)):
-                    preloaded_poses.append(np.asarray(frame['transform_matrix']))
+                    pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
-                    preloaded_images.append(cv2.imread(image_path, mode='RGB'))
+                    image_list.append(cv2.imread(image_path, mode='RGB'))
+
+                preloaded_poses = np.asarray(pose_list)
+                preloaded_images = np.asarray(image_list)
 
                 print(f'Poses shape: {preloaded_poses.shape}')
                 print(f'Image shape. {preloaded_images.shape}')
