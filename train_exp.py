@@ -59,9 +59,9 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
                 H, W, K, c2w, ndc, inverse_y=render_kwargs['inverse_y'],
                 flip_x=cfg.data.flip_x, flip_y=cfg.data.flip_y)
         keys = ['rgb_marched', 'depth', 'alphainv_last']
-        rays_o = rays_o.flatten(0,-2)
-        rays_d = rays_d.flatten(0,-2)
-        viewdirs = viewdirs.flatten(0,-2)
+        rays_o = rays_o.flatten(0,-2).to('cuda')
+        rays_d = rays_d.flatten(0,-2).to('cuda')
+        viewdirs = viewdirs.flatten(0,-2).to('cuda')
         render_result_chunks = [
             {k: v for k, v in model(ro, rd, vd, **render_kwargs).items() if k in keys}
             for ro, rd, vd in zip(rays_o.split(8192, 0), rays_d.split(8192, 0), viewdirs.split(8192, 0))
