@@ -381,7 +381,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         loss = 0
 
         # Add MSE-based loss
-        raise Exception(sel_b)
+        raise Exception(rgb_tr[sel_b].shape)
         loss += mse_loss(torch.permute(rgb, (0, 2, 3, 1)), rgb_tr[sel_b] / 255.0)  # * max(3.0, (1 - (global_step / 2000.0)) * 1000.0)
 
         """
