@@ -289,7 +289,7 @@ class DirectVoxGO(torch.nn.Module):
         rays_d = rays_d.contiguous().to(torch.float32)
         stepdist = stepsize * self.voxel_size
         ray_pts, mask_outbbox, ray_id, step_id, N_steps, t_min, t_max = render_utils_cuda.sample_pts_on_rays(
-            rays_o, rays_d, self.xyz_min, self.xyz_max, near, far, stepdist)
+            rays_o, rays_d, self.xyz_min.to(torch.float32), self.xyz_max.to(torch.float32), near, far, stepdist)
         mask_inbbox = ~mask_outbbox
         ray_pts = ray_pts[mask_inbbox]
         ray_id = ray_id[mask_inbbox]
