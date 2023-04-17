@@ -7,6 +7,9 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
+import json
+import tqdm
+
 trans_t = lambda t : torch.Tensor([
     [1,0,0,0],
     [0,1,0,0],
@@ -48,7 +51,12 @@ def pose_spherical_opengl(theta, phi, radius):
     c2w = torch.Tensor(np.array([[1,0,0,0],[0,0,-1,0],[0,1,0,0],[0,0,0,1]])) @ c2w
     return c2w
 
-def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_poses=200):
+
+preloaded_images = np.array([])
+preloaded_poses = np.array([])
+
+
+def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_poses=200, dataset=None):
     splits = ['train', 'val', 'test']
 
     num_train = num_poses
@@ -71,7 +79,28 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     phi[-1] = -45
     ####################################################################################################################################################
 
-    poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
+    # CUSTOM: Load poses and images from a dataset
+    if dataset is not None:
+        if preloaded_poses is None:
+            with open(os.path.join(os.getcwd(), dataset, 'transforms_train.json'), 'r') as f:
+                frames = json.load(f)['frames']
+                print(f'Loading {len(frames)} poses from the dataset...')
+
+                for frame in tqdm(enumerate(frames)):
+                    preloaded_poses.append(np.asarray(frame['transform_matrix']))
+                    image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
+                    preloaded_images.append(cv2.imread(image_path, mode='RGB'))
+
+                print(f'Poses shape: {preloaded_poses.shape}')
+                print(f'Image shape. {preloaded_images.shape}')
+
+        idx = np.random.choice(np.arange(len(preloaded_poses)), th.shape[0], replace=False)
+        poses = torch.stack(preloaded_poses[idx], 0)
+        imgs = torch.stack(preloaded_images[idx], 0)
+    else:
+        poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
+        imgs = np.zeros((num_train + num_val + num_test, resolution, resolution, 4))
+
     render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180,180,40+1)[:-1]], 0)
 
     counts = [0, num_train, num_train + num_val, num_train + num_val + num_test]
@@ -79,4 +108,4 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
 
     hwf = scale_intrinsics(resolution)
 
-    return np.ones((num_train + num_val + num_test, resolution, resolution, 4)), poses, render_poses, hwf, i_split
+    return imgs, poses, render_poses, hwf, i_split

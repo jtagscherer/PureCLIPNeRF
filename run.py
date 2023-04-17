@@ -59,6 +59,10 @@ def config_parser():
     # Manual text prompt input
     parser.add_argument("--prompt", type=str, default=None,
                         help='input text prompt for text to 3d')
+
+    # CUSTOM: Dataset for MSE loss
+    parser.add_argument("--dataset", type=str, default=None,
+                        help='dataset path for MSE guidance')
     return parser
 
 def seed_everything():
@@ -104,6 +108,7 @@ cfg = mmcv.Config.fromfile(args.config)
 
 if args.prompt is not None:
     cfg.fine_train.query_text = args.prompt
+    cfg.dataset = args.dataset
 
 # init enviroment
 if torch.cuda.is_available():

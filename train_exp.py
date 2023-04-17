@@ -192,7 +192,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         """
         Change to new poses sampled each time
         """
-        new_data_dict = load_data(cfg.data)
+        new_data_dict = load_data(cfg.data, dataset=cfg.dataset)
         if new_data_dict['irregular_shape']:
             new_data_dict['images'] = [torch.FloatTensor(im, device='cpu') for im in new_data_dict['images']]
         else:
