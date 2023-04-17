@@ -93,7 +93,7 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
 
 def compute_bbox_by_cam_frustrm(args, cfg, HW, Ks, poses, i_train, near, far, **kwargs):
     print('compute_bbox_by_cam_frustrm: start')
-    xyz_min = torch.Tensor([np.inf, np.inf, np.inf])
+    xyz_min = torch.Tensor([np.inf, np.inf, np.inf]).to('cuda')
     xyz_max = -xyz_min
     counter = 0
     for (H, W), K, c2w in zip(HW[i_train], Ks[i_train], poses[i_train]):
@@ -102,9 +102,9 @@ def compute_bbox_by_cam_frustrm(args, cfg, HW, Ks, poses, i_train, near, far, **
                 ndc=cfg.data.ndc, inverse_y=cfg.data.inverse_y,
                 flip_x=cfg.data.flip_x, flip_y=cfg.data.flip_y)
         if cfg.data.ndc:
-            pts_nf = torch.stack([rays_o+rays_d*near, rays_o+rays_d*far])
+            pts_nf = torch.stack([rays_o+rays_d*near, rays_o+rays_d*far]).to('cuda')
         else:
-            pts_nf = torch.stack([rays_o+viewdirs*near, rays_o+viewdirs*far])
+            pts_nf = torch.stack([rays_o+viewdirs*near, rays_o+viewdirs*far]).to('cuda')
         if counter == 0:
             xyz_min = torch.minimum(xyz_min, pts_nf.amin((0,1,2)))
             xyz_max = torch.maximum(xyz_max, pts_nf.amax((0,1,2)))
