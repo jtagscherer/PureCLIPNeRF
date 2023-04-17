@@ -91,8 +91,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 pose_list = []
                 image_list = []
 
-                for frame in tqdm.tqdm(enumerate(frames)):
-                    print(json.loads(frame)['transform_matrix'])
+                for frame in tqdm.tqdm(frames):
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
                     image_list.append(cv2.imread(image_path, mode='RGB'))
