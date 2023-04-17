@@ -136,7 +136,7 @@ class DirectVoxGO(torch.nn.Module):
             torch.linspace(self.xyz_min[0], self.xyz_max[0], self.density.shape[2]),
             torch.linspace(self.xyz_min[1], self.xyz_max[1], self.density.shape[3]),
             torch.linspace(self.xyz_min[2], self.xyz_max[2], self.density.shape[4]),
-        ), -1)
+        ), -1).to('cuda')
         nearest_dist = torch.stack([
             (self_grid_xyz.unsqueeze(-2) - co).pow(2).sum(-1).sqrt().amin(-1)
             for co in cam_o.split(100)  # for memory saving
