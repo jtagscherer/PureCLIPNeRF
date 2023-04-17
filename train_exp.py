@@ -317,7 +317,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         if global_step % cfg.data.pose_refresh_rate == 0:
             rgb_tr, rays_o_tr, rays_d_tr, viewdirs_tr, imsz, _ = gather_training_rays()
 
-        raise Exception(rgb_tr)
+        # raise Exception(rgb_tr)
 
         # renew occupancy grid
         if model.mask_cache is not None and (global_step + 500) % 1000 == 0:
