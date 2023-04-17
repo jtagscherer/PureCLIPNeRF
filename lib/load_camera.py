@@ -94,7 +94,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 for frame in tqdm.tqdm(frames):
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
-                    image_list.append(cv2.imread(image_path, mode='RGB'))
+                    image_list.append(cv2.imread(image_path))
 
                 preloaded_poses = np.asarray(pose_list)
                 preloaded_images = np.asarray(image_list)
