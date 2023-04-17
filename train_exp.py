@@ -317,8 +317,6 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         if global_step % cfg.data.pose_refresh_rate == 0:
             rgb_tr, rays_o_tr, rays_d_tr, viewdirs_tr, imsz, _ = gather_training_rays()
 
-        # raise Exception(rgb_tr)
-
         # renew occupancy grid
         if model.mask_cache is not None and (global_step + 500) % 1000 == 0:
             self_alpha = F.max_pool3d(model.activate_density(model.density), kernel_size=3, padding=1, stride=1)[0,0]
@@ -377,6 +375,12 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         rgb = render_result['rgb_marched'].unsqueeze(0).reshape(-1, cfg.data.resolution, cfg.data.resolution, 3).permute(0, 3, 1, 2)
         alphainv = render_result['alphainv_last'].unsqueeze(0).unsqueeze(-1).reshape(-1, 1, cfg.data.resolution, cfg.data.resolution)
 
+        loss = 0
+
+        # Add MSE-based loss
+        # rgb_tr, rgb
+        raise Exception(f'GT: {rgb_tr.shape}, RGB: {rgb.shape}')
+
         """
         Get augmentations from DiffAugment ('color,translation,resize,cutout')
         """
@@ -426,8 +430,6 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
             rgb_norm_2 = norm_transform_2(rgb)
             image_features_2 = clip_model_2.encode_image(rgb_norm_2)
             image_features_2 = F.normalize(image_features_2, dim=1).unsqueeze(0)
-
-        loss = 0
 
         similarity = (image_features * text_features).sum(-1).mean()
         clip_loss = 1 - similarity
