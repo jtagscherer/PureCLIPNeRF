@@ -97,14 +97,10 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 for frame in tqdm.tqdm(frames):
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
-                    print(f'Reading {image_path}')
                     image_list.append(cv2.imread(image_path))
 
                 preloaded_poses = torch.from_numpy(np.asarray(pose_list))
                 preloaded_images = torch.from_numpy(np.asarray(image_list))
-
-                print(f'Poses shape: {preloaded_poses.shape}')
-                print(f'Image shape. {preloaded_images.shape}')
 
         idx = np.random.choice(np.arange(len(preloaded_poses)), th.shape[0], replace=True)
         poses = torch.stack([preloaded_poses[idx]], 0).squeeze(0)
@@ -121,5 +117,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     i_split = [np.arange(counts[i], counts[i+1]) for i in range(3)]
 
     hwf = scale_intrinsics(resolution)
+
+    print(f'Imgs: {imgs.shape}, Poses: {poses.shape}')
 
     return imgs, poses, render_poses, hwf, i_split
