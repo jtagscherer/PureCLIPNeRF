@@ -8,7 +8,7 @@ def load_data(args, dataset=None):
     K, depths = None, None
 
     if args.sample_cameras:
-        images, poses, render_poses, hwf, i_split = sample_cameras(args.datadir, args.half_res, args.testskip, args.resolution, args.num_sampled_poses, dataset=dataset, num_poses=1)
+        images, poses, render_poses, hwf, i_split = sample_cameras(args.datadir, args.half_res, args.testskip, args.resolution, args.num_sampled_poses, dataset=dataset)
         near = 4. - math.sqrt(3) * 1
         far = 4. + math.sqrt(3) * 1
 

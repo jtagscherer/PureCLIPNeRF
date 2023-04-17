@@ -59,7 +59,10 @@ preloaded_poses = np.array([])
 def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_poses=200, dataset=None):
     splits = ['train', 'val', 'test']
 
-    num_train = num_poses
+    if dataset is None:
+        num_train = num_poses
+    else:
+        num_train = 1
     num_val = 1              # dummy variable
     num_test = 1
 
