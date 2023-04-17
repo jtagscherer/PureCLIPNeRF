@@ -93,7 +93,7 @@ def load_everything(args, cfg):
     if data_dict['irregular_shape']:
         data_dict['images'] = [torch.FloatTensor(im, device='cpu') for im in data_dict['images']]
     else:
-        data_dict['images'] = torch.FloatTensor(data_dict['images'], device='cpu')
+        data_dict['images'] = torch.as_tensor(data_dict['images'], device='cpu')
     data_dict['poses'] = torch.Tensor(data_dict['poses'])
     return data_dict
 
