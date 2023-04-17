@@ -380,7 +380,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         loss = 0
 
         # Add MSE-based loss
-        loss += mse_loss(rgb_tr / 255.0, rgb)
+        loss += mse_loss(rgb_tr / 255.0, torch.permute(rgb, (0, 2, 3, 1)))
 
         """
         Get augmentations from DiffAugment ('color,translation,resize,cutout')
