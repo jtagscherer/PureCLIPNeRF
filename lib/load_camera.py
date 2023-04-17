@@ -104,8 +104,8 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 preloaded_images = torch.from_numpy(np.asarray(image_list))
 
         idx = np.random.choice(np.arange(len(preloaded_poses)), th.shape[0], replace=True)
-        poses = torch.stack([preloaded_poses[idx]], 0)
-        imgs = torch.stack([preloaded_images[idx]], 0)
+        poses = torch.stack([preloaded_poses[idx]], 0).squeeze()
+        imgs = torch.stack([preloaded_images[idx]], 0).squeeze()
 
         print(imgs)
     else:
