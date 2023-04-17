@@ -317,6 +317,8 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         if global_step % cfg.data.pose_refresh_rate == 0:
             rgb_tr, rays_o_tr, rays_d_tr, viewdirs_tr, imsz, _ = gather_training_rays()
 
+        raise Exception(rgb_tr)
+
         # renew occupancy grid
         if model.mask_cache is not None and (global_step + 500) % 1000 == 0:
             self_alpha = F.max_pool3d(model.activate_density(model.density), kernel_size=3, padding=1, stride=1)[0,0]

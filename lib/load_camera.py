@@ -71,9 +71,6 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     phi[-1] = -45
     ####################################################################################################################################################
 
-    for i in range(th.shape[0]):
-        raise Exception(pose_spherical(th[i], phi[i], rad[i]))
-
     poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
     render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180,180,40+1)[:-1]], 0)
 
