@@ -312,6 +312,8 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
     else:
         trans_strategy = None
 
+    mse_loss = nn.MSELoss()
+
     for global_step in trange(1+start, 1+cfg_train.N_iters):
         # Get new poses every time
         if global_step % cfg.data.pose_refresh_rate == 0:
@@ -378,9 +380,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         loss = 0
 
         # Add MSE-based loss
-        # rgb_tr, rgb
-        raise Exception(f'GT: {rgb_tr.shape} min: {rgb_tr.min()} max: {(rgb_tr / 255.0).max()}, RGB: {rgb.shape} min: {rgb.min()} max: {rgb.max()}')
-        
+        loss += mse_loss(rgb_tr / 255.0, rgb)
 
         """
         Get augmentations from DiffAugment ('color,translation,resize,cutout')
