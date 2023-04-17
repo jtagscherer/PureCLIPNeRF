@@ -79,4 +79,4 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
 
     hwf = scale_intrinsics(resolution)
 
-    return np.zeros((num_train + num_val + num_test, resolution, resolution, 4)), poses, render_poses, hwf, i_split
+    return np.ones((num_train + num_val + num_test, resolution, resolution, 4)), poses, render_poses, hwf, i_split
