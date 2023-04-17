@@ -34,6 +34,8 @@ def config_parser():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--config', required=True,
                         help='config file path')
+    parser.add_argument('--iters', type=int, default=15000,
+                        help='number of training iterations')
     parser.add_argument("--seed", type=int, default=777,
                         help='Random seed')
     parser.add_argument("--no_reload", action='store_true',
@@ -105,6 +107,8 @@ jax_key = jax.random.PRNGKey(0)
 parser = config_parser()
 args = parser.parse_args()
 cfg = mmcv.Config.fromfile(args.config)
+
+cfg.fine_train.N_iters = args.iters
 
 if args.prompt is not None:
     cfg.fine_train.query_text = args.prompt
