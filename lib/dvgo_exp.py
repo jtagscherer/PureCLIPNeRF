@@ -285,10 +285,9 @@ class DirectVoxGO(torch.nn.Module):
             ray_id:           [M]    the index of the ray of each point.
             step_id:          [M]    the i'th step on a ray of each point.
         '''
-        rays_o = rays_o.contiguous()
-        rays_d = rays_d.contiguous()
+        rays_o = rays_o.contiguous().to(torch.float32)
+        rays_d = rays_d.contiguous().to(torch.float32)
         stepdist = stepsize * self.voxel_size
-        raise Exception(f'{rays_o.dtype} {rays_d.dtype} {self.xyz_min.dtype} {self.xyz_max.dtype} {near} {far} {stepdist}')
         ray_pts, mask_outbbox, ray_id, step_id, N_steps, t_min, t_max = render_utils_cuda.sample_pts_on_rays(
             rays_o, rays_d, self.xyz_min, self.xyz_max, near, far, stepdist)
         mask_inbbox = ~mask_outbbox
