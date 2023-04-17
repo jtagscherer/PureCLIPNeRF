@@ -81,7 +81,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
 
     # CUSTOM: Load poses and images from a dataset
     global preloaded_images, preloaded_poses
-    
+
     if dataset is not None:
         if len(preloaded_poses) == 0:
             with open(os.path.join(os.getcwd(), dataset, 'transforms_train.json'), 'r') as f:
@@ -92,6 +92,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 image_list = []
 
                 for frame in tqdm.tqdm(enumerate(frames)):
+                    print(frame['transform_matrix'])
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
                     image_list.append(cv2.imread(image_path, mode='RGB'))
