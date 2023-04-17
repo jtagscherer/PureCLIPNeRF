@@ -100,6 +100,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                     print(f'Reading {image_path}')
                     print(cv2.imread(image_path, cv2.IMREAD_UNCHANGED))
                     print(cv2.imread(image_path, cv2.IMREAD_UNCHANGED).shape)
+                    print(cv2.imread(image_path, cv2.IMREAD_UNCHANGED).max())
                     raise Exception()
                     image_list.append(cv2.imread(image_path, cv2.IMREAD_UNCHANGED))
 
