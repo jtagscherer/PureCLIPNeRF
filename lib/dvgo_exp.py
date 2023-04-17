@@ -248,10 +248,9 @@ class DirectVoxGO(torch.nn.Module):
         shape = xyz.shape[:-1]
         xyz = xyz.reshape(1,1,1,-1,3)
         ind_norm = ((xyz - self.xyz_min) / (self.xyz_max - self.xyz_min)).flip((-1,)) * 2 - 1
-        raise Exception(f'{grids[0].dtype}, {ind_norm.dtype}')
         ret_lst = [
             # TODO: use `rearrange' to make it readable
-            F.grid_sample(grid, ind_norm, mode=mode, align_corners=align_corners).reshape(grid.shape[1],-1).T.reshape(*shape,grid.shape[1])
+            F.grid_sample(grid, ind_norm.to(torch.float32), mode=mode, align_corners=align_corners).reshape(grid.shape[1],-1).T.reshape(*shape,grid.shape[1])
             for grid in grids
         ]
         for i in range(len(grids)):
