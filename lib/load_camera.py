@@ -110,9 +110,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     else:
         poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
         imgs = np.zeros((num_train + num_val + num_test, resolution, resolution, 4))
-        render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180,180,40+1)[:-1]], 0)
-
-    raise Exception(f'Render poses: {render_poses.shape}')
+        render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180,180,40+1)[:-1]], 0).to('cuda')
 
     counts = [0, num_train, num_train + num_val, num_train + num_val + num_test]
     i_split = [np.arange(counts[i], counts[i+1]) for i in range(3)]
