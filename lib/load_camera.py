@@ -97,7 +97,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 for frame in tqdm.tqdm(frames):
                     pose_list.append(np.asarray(frame['transform_matrix']))
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
-                    original_image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+                    original_image = cv2.imread(image_path)
                     image_list.append(cv2.resize(original_image, (224, 224), interpolation=cv2.INTER_AREA))
 
                 preloaded_poses = torch.from_numpy(np.asarray(pose_list))
