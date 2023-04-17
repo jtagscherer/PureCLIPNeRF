@@ -196,7 +196,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         if new_data_dict['irregular_shape']:
             new_data_dict['images'] = [torch.FloatTensor(im, device='cpu') for im in new_data_dict['images']]
         else:
-            new_data_dict['images'] = torch.as_tensor(new_data_dict['images'], device='cpu')
+            new_data_dict['images'] = torch.as_tensor(new_data_dict['images'], device='cuda')
         new_data_dict['poses'] = torch.Tensor(new_data_dict['poses'])
 
         HW, Ks, near, far, i_train, i_val, i_test, poses, render_poses, images = [
@@ -208,7 +208,7 @@ def scene_rep_reconstruction(args, cfg, cfg_model, cfg_train, xyz_min, xyz_max, 
         if new_data_dict['irregular_shape']:
             rgb_tr_ori = [images[i].to('cpu' if cfg.data.load2gpu_on_the_fly else device) for i in i_train]
         else:
-            rgb_tr_ori = images[i_train].to('cpu' if cfg.data.load2gpu_on_the_fly else device)
+            rgb_tr_ori = images[i_train].to('cuda' if cfg.data.load2gpu_on_the_fly else device)
 
         if cfg_train.ray_sampler == 'in_maskcache':
             raise NotImplementedError
