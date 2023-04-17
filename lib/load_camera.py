@@ -62,7 +62,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     if dataset is None:
         num_train = num_poses
     else:
-        num_train = 1
+        num_train = 100
     num_val = 1              # dummy variable
     num_test = 1
 
