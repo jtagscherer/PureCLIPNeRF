@@ -109,12 +109,10 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
         poses = torch.stack([preloaded_poses[idx]], 0).squeeze(0)
         imgs = torch.stack([preloaded_images[idx]], 0)
 
-        print(f'Poses dataset: {poses}')
+        print(imgs)
     else:
         poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
         imgs = np.zeros((num_train + num_val + num_test, resolution, resolution, 4))
-
-        print(f'Poses generated: {poses}')
 
     render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180,180,40+1)[:-1]], 0)
 
