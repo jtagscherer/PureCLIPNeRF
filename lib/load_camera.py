@@ -99,6 +99,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                     image_path = os.path.join(os.getcwd(), dataset, f'{frame["file_path"]}.png')
                     print(f'Reading {image_path}')
                     print(cv2.imread(image_path))
+                    print(cv2.imread(image_path).shape)
                     raise Exception()
                     image_list.append(cv2.imread(image_path))
 
