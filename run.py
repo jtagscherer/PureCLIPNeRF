@@ -67,7 +67,7 @@ def config_parser():
                         help='dataset path for MSE guidance')
 
     # CUSTOM: Arguments for metrics
-    parser.add_argument("--target_prompt", type=str, default=None,
+    parser.add_argument("--source_prompt", type=str, default=None,
                         help='prompt describing the original scene')
     return parser
 
@@ -119,8 +119,8 @@ if args.prompt is not None:
     cfg.dataset = args.dataset
 
 if args.target_prompt is not None and args.prompt is not None:
-    cfg.source_prompt = args.prompt
-    cfg.target_prompt = args.target_prompt
+    cfg.source_prompt = args.source_prompt
+    cfg.target_prompt = args.prompt
 
 # init enviroment
 if torch.cuda.is_available():
