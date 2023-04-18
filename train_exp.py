@@ -28,6 +28,13 @@ from DiffAugment_pytorch import DiffAugment
 import jax
 
 
+from metrics.clip_metric import CLIPMetric
+from metrics.clip_directional_metric import CLIPDirectionalMetric
+from metrics.clip_temporal_consistency_metric import CLIPTemporalConsistencyMetric
+from metrics.consistency_metric import ConsistencyMetric
+from metrics.fid_metric import FIDMetric
+
+
 @torch.no_grad()
 def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
                       gt_imgs=None, savedir=None, render_factor=0, cfg=None):
@@ -52,6 +59,22 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
     depths = []
     alphas = []
 
+    clip_metric = CLIPMetric()
+    clip_directional_metric = CLIPDirectionalMetric()
+    clip_temporal_consistency_metric = CLIPTemporalConsistencyMetric()
+    consistency_metric = ConsistencyMetric()
+    fid_metric = FIDMetric()
+
+    short_range_frame_queue = []
+    long_range_frame_queue = []
+    clip_temporal_consistency_queue = []
+
+    clip_metrics = []
+    clip_directional_metrics = []
+    clip_temporal_consistency_metrics = []
+    short_range_3d_consistency_metrics = []
+    long_range_3d_consistency_metrics = []
+
     for i, c2w in enumerate(tqdm(render_poses)):
         H, W = HW[i]
         K = Ks[i]
@@ -73,11 +96,81 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
         rgb = render_result['rgb_marched'].cpu().numpy()
         depth = render_result['depth'].cpu().numpy()
 
+        # DEBUG: Check shape, potentially move to CUDA and transpose
+        raise Exception(f'GT ({len(gt_imgs)}) shape: {gt_imgs[0].shape}, RGB shape: {rgb.shape}')
+
+        prediction = None  # torch.permute(rgb, (2, 0, 1)).unsqueeze(0).to('cuda')
+        gt_img = None  # torch.permute(torch.from_numpy(gt_imgs[i]), (2, 0, 1)).unsqueeze(0).to('cuda')
+
+        clip_metrics.append(clip_metric.compute(
+            image=prediction,
+            text=cfg.target_prompt
+        ).cpu().numpy())
+
+        clip_directional_metrics.append(clip_directional_metric.compute(
+            image_source=gt_img,
+            image_target=prediction,
+            text_source=cfg.source_prompt,
+            text_target=cfg.target_prompt
+        ).cpu().numpy())
+
+        clip_temporal_consistency_queue.append({
+            'source': gt_img.clone(),
+            'target': prediction.clone()
+        })
+
+        if len(clip_temporal_consistency_queue) > 2:
+            item = clip_temporal_consistency_queue.pop(0)
+            clip_temporal_consistency_metrics.append(clip_temporal_consistency_metric.compute(
+                image_source_0=item['source'],
+                image_target_0=item['target'],
+                image_target_1=prediction
+            ).cpu().numpy())
+
+        short_range_frame_queue.append(prediction.clone().cpu())
+        long_range_frame_queue.append(prediction.clone().cpu())
+
+        if len(short_range_frame_queue) > 2:
+            short_range_3d_consistency_metrics.append(consistency_metric.compute(
+                first_frame=short_range_frame_queue.pop(0),
+                second_frame=prediction.clone().cpu()
+            ).cpu().numpy())
+
+        if len(long_range_frame_queue) > 8:
+            long_range_3d_consistency_metrics.append(consistency_metric.compute(
+                first_frame=long_range_frame_queue.pop(0),
+                second_frame=prediction.clone().cpu()
+            ).cpu().numpy())
+
+        fid_metric.update(
+            ground_truth=(gt_img.clone().cpu() * 255.0).to(dtype=torch.uint8).to('cuda'),
+            prediction=(prediction.clone().cpu() * 255.0).to(dtype=torch.uint8).to('cuda')
+        )
+
+
         rgbs.append(rgb)
         alphas.append(render_result['alphainv_last'].cpu().numpy())
         depths.append(depth)
         if i==0:
             print('Testing', rgb.shape)
+
+    # Print metrics
+    clip_metrics = np.asarray(clip_metrics)
+    clip_directional_metrics = np.asarray(clip_directional_metrics)
+    clip_temporal_consistency_metrics = np.asarray(clip_temporal_consistency_metrics)
+    short_range_3d_consistency_metrics = np.asarray(short_range_3d_consistency_metrics)
+    long_range_3d_consistency_metrics = np.asarray(long_range_3d_consistency_metrics)
+
+    print('METRICS')
+    print(f'CLIP: Mean {clip_metrics.mean()}, Std {clip_metrics.std()}')
+    print(f'CLIP Directional: Mean {clip_directional_metrics.mean()}, Std {clip_directional_metrics.std()}')
+    print(
+        f'CLIP Temporal Consistency: Mean {clip_temporal_consistency_metrics.mean()}, Std {clip_temporal_consistency_metrics.std()}')
+    print(
+        f'Short-Range 3D Consistency: Mean {short_range_3d_consistency_metrics.mean()}, Std {short_range_3d_consistency_metrics.std()}')
+    print(
+        f'Long-Range 3D Consistency: Mean {long_range_3d_consistency_metrics.mean()}, Std {long_range_3d_consistency_metrics.std()}')
+    print(f'FID: {fid_metric.compute().cpu().numpy()}')
 
     if savedir is not None:
         print(f'Writing images to {savedir}')
@@ -85,6 +178,23 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
             rgb8 = utils.to8b(rgbs[i])
             filename = os.path.join(savedir, '{:03d}.png'.format(i))
             imageio.imwrite(filename, rgb8)
+
+        metrics_path = os.path.join(savedir, 'metrics.txt')
+        if os.path.exists(metrics_path):
+            os.remove(metrics_path)
+
+        with open(metrics_path, 'w+') as f:
+            f.write(f'CLIP: Mean {clip_metrics.mean()}, Std {clip_metrics.std()}\n')
+            f.write(f'CLIP Directional: Mean {clip_directional_metrics.mean()}, Std {clip_directional_metrics.std()}\n')
+            f.write(
+                f'CLIP Temporal Consistency: Mean {clip_temporal_consistency_metrics.mean()}, Std {clip_temporal_consistency_metrics.std()}\n')
+            f.write(
+                f'Short-Range 3D Consistency: Mean {short_range_3d_consistency_metrics.mean()}, Std {short_range_3d_consistency_metrics.std()}\n')
+            f.write(
+                f'Long-Range 3D Consistency: Mean {long_range_3d_consistency_metrics.mean()}, Std {long_range_3d_consistency_metrics.std()}\n')
+            f.write(f'FID: {fid_metric.compute().cpu().numpy()}\n')
+
+        print(f'Wrote metrics to {metrics_path}!')
 
     rgbs = np.array(rgbs)
     depths = np.array(depths)

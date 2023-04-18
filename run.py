@@ -65,6 +65,10 @@ def config_parser():
     # CUSTOM: Dataset for MSE loss
     parser.add_argument("--dataset", type=str, default=None,
                         help='dataset path for MSE guidance')
+
+    # CUSTOM: Arguments for metrics
+    parser.add_argument("--target_prompt", type=str, default=None,
+                        help='prompt describing the original scene')
     return parser
 
 def seed_everything():
@@ -113,6 +117,10 @@ cfg.fine_train.N_iters = args.iters
 if args.prompt is not None:
     cfg.fine_train.query_text = args.prompt
     cfg.dataset = args.dataset
+
+if args.target_prompt is not None and args.prompt is not None:
+    cfg.source_prompt = args.prompt
+    cfg.target_prompt = args.target_prompt
 
 # init enviroment
 if torch.cuda.is_available():
