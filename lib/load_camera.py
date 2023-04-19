@@ -62,7 +62,7 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
     if dataset is None:
         num_train = num_poses
     else:
-        num_train = 100
+        num_train = 200
     num_val = 1              # dummy variable
     num_test = 1
 
@@ -107,11 +107,11 @@ def sample_cameras(basedir, half_res=False, testskip=1, resolution=None, num_pos
                 preloaded_images = torch.from_numpy(np.asarray(image_list))
 
         idx = np.random.choice(np.arange(len(preloaded_poses)), th.shape[0], replace=True)
-        poses = torch.stack([preloaded_poses[idx]], 0).squeeze()
-        imgs = torch.stack([preloaded_images[idx]], 0).squeeze()
-        # render_poses = torch.stack([preloaded_poses], 0).squeeze()
-        render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180, 180, 40 + 1)[:-1]],
-                                   0).to('cuda')
+        poses = torch.stack([preloaded_poses[i] for i in range(0, num_train)], 0).squeeze()
+        imgs = torch.stack([preloaded_images[i] for i in range(0, num_train)], 0).squeeze()
+        render_poses = torch.stack([preloaded_poses[i] for i in range(0, num_train)], 0).squeeze()
+        #render_poses = torch.stack([pose_spherical(angle, -30.0, 4.0) for angle in np.linspace(-180, 180, 40 + 1)[:-1]],
+        #                           0).to('cuda')
     else:
         poses = torch.stack([pose_spherical(th[i], phi[i], rad[i]) for i in range(th.shape[0])], 0)
         imgs = np.zeros((num_train + num_val + num_test, resolution, resolution, 4))
