@@ -46,7 +46,7 @@ for scene in scenes.values():
 
     # Compute all metrics
     os.system(f'mv logs/{scene["dataset"]}_{query["name"]} logs/low_exp_vit16')
-    command = f'python run.py --config configs/low/exp_vit16.py --prompt "{current_query}" --source_prompt "{scene["source_prompt"]}" --dataset datasets/{scene["dataset"]}/ --render_only'
+    command = f'python run.py --config configs/low/exp_vit16.py --prompt "{current_query}" --source_prompt "{scene["source_prompt"]}" --dataset datasets/{scene["dataset"]}/ --render_only --render_test'
     print(f'[STARTING] {command}')
     os.system(command)
     os.system(f'mv logs/low_exp_vit16 logs/{scene["dataset"]}_{query["name"]}')
