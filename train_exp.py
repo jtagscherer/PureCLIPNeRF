@@ -93,7 +93,7 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
             k: torch.cat([ret[k] for ret in render_result_chunks]).reshape(H,W,-1)
             for k in render_result_chunks[0].keys()
         }
-        rgb = render_result['rgb_marched'].cpu().numpy()
+        rgb = render_result['rgb_marched']
         depth = render_result['depth'].cpu().numpy()
 
         prediction = torch.permute(rgb, (2, 0, 1)).unsqueeze(0).to('cuda')
@@ -145,7 +145,7 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
         )
 
 
-        rgbs.append(rgb)
+        rgbs.append(rgb.cpu().numpy())
         alphas.append(render_result['alphainv_last'].cpu().numpy())
         depths.append(depth)
         if i==0:
