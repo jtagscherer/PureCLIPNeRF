@@ -96,11 +96,8 @@ def render_viewpoints(model, render_poses, HW, Ks, ndc, render_kwargs,
         rgb = render_result['rgb_marched'].cpu().numpy()
         depth = render_result['depth'].cpu().numpy()
 
-        # DEBUG: Check shape, potentially move to CUDA and transpose
-        raise Exception(f'GT ({len(gt_imgs)}) shape: {gt_imgs[0].shape}, RGB shape: {rgb.shape}')
-
-        prediction = None  # torch.permute(rgb, (2, 0, 1)).unsqueeze(0).to('cuda')
-        gt_img = None  # torch.permute(torch.from_numpy(gt_imgs[i]), (2, 0, 1)).unsqueeze(0).to('cuda')
+        prediction = torch.permute(rgb, (2, 0, 1)).unsqueeze(0).to('cuda')
+        gt_img = torch.permute(torch.from_numpy(gt_imgs[i]), (2, 0, 1)).unsqueeze(0).to('cuda')
 
         clip_metrics.append(clip_metric.compute(
             image=prediction,
