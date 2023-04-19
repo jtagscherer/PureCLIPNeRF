@@ -217,11 +217,11 @@ if args.render_test:
     testsavedir = os.path.join(cfg.basedir, cfg.expname, f'render_test_{ckpt_name}')
     os.makedirs(testsavedir, exist_ok=True)
     rgbs, depths = render_viewpoints(
-            render_poses=data_dict['poses'][data_dict['i_test']],
-            HW=data_dict['HW'][data_dict['i_test']],
-            Ks=data_dict['Ks'][data_dict['i_test']],
-            gt_imgs=[data_dict['images'][i].cpu().numpy() for i in data_dict['i_test']],
-            savedir=testsavedir, render_factor=224, cfg=cfg,
+            render_poses=data_dict['poses'],
+            HW=data_dict['HW'],
+            Ks=data_dict['Ks'],
+            gt_imgs=[img.cpu().numpy() for img in data_dict['images']],
+            savedir=testsavedir, render_factor=cfg.data.render_resolution, cfg=cfg,
             **render_viewpoints_kwargs)
 
 '''testsavedir = os.path.join(cfg.basedir, cfg.expname, f'render_video_{ckpt_name}')
