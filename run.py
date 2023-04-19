@@ -224,14 +224,14 @@ if args.render_test:
             savedir=testsavedir, render_factor=224, cfg=cfg,
             **render_viewpoints_kwargs)
 
-testsavedir = os.path.join(cfg.basedir, cfg.expname, f'render_video_{ckpt_name}')
+'''testsavedir = os.path.join(cfg.basedir, cfg.expname, f'render_video_{ckpt_name}')
 os.makedirs(testsavedir, exist_ok=True)
 rgbs, depths = render_viewpoints(
         render_poses=data_dict['render_poses'],
         HW=data_dict['HW'][data_dict['i_test']][[0]].repeat(len(data_dict['render_poses']), 0),
         Ks=data_dict['Ks'][data_dict['i_test']][[0]].repeat(len(data_dict['render_poses']), 0),
         savedir=testsavedir, render_factor=cfg.data.render_resolution, cfg=cfg,
-        **render_viewpoints_kwargs)
+        **render_viewpoints_kwargs)'''
 imageio.mimwrite(os.path.join(testsavedir, 'video.rgb.mp4'), utils.to8b(rgbs), fps=30, quality=8)
 imageio.mimwrite(os.path.join(testsavedir, 'video.depth.mp4'), utils.to8b(1 - depths / np.max(depths)), fps=30, quality=8)
 
