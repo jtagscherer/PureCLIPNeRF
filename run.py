@@ -118,7 +118,7 @@ if args.prompt is not None:
     cfg.fine_train.query_text = args.prompt
     cfg.dataset = args.dataset
 
-if args.target_prompt is not None and args.prompt is not None:
+if args.source_prompt is not None and args.prompt is not None:
     cfg.source_prompt = args.source_prompt
     cfg.target_prompt = args.prompt
 
